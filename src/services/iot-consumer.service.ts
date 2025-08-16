@@ -11,12 +11,24 @@ export class IotConsumerService implements OnModuleInit, OnModuleDestroy {
   private channel: amqp.Channel;
   private readonly queue = 'xray_queue';
 
-  private messages: any[] = [];
 
   constructor(@InjectModel(IotData.name) private iotModel: Model<IotData>,) { }
 
-  async saveMessage(payload: any) {
-    return this.iotModel.create({ payload });
+
+  async traceAndSave(payload: []) {
+    const deviceId = Object.keys(payload)[0];
+    const deviceData = payload[deviceId];
+
+    const doc = {
+      deviceId,
+      time: deviceData.time,
+      dataLength: deviceData.data.length,
+      dataVolume: deviceData.data.reduce((sum, item) => sum + item[1].length, 0),
+      data: deviceData.data,
+      extra: {}
+    };
+
+    return this.iotModel.create(doc);
   }
 
   async onModuleInit() {
@@ -31,8 +43,8 @@ export class IotConsumerService implements OnModuleInit, OnModuleDestroy {
         const content = msg.content.toString();
         try {
           const json = JSON.parse(content);
-          this.messages.push(json);
-          this.saveMessage(json)
+          // this.saveMessage(json)
+          this.traceAndSave(json)
           console.log('📥 Received:', json);
         } catch (err) {
           console.error('❌ Error parsing message:', err.message);
@@ -42,9 +54,6 @@ export class IotConsumerService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  getMessages() {
-    return this.messages;
-  }
 
   async onModuleDestroy() {
     try {
