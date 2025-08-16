@@ -1,11 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { IotProducerModule } from './modules/iot-consumer.module';
+import { IotConsumerModule } from './modules/iot-consumer.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [IotProducerModule],
+  imports: [
+    MongooseModule.forRoot('mongodb://admin:admin@localhost:27017/iot_db?authSource=admin'),
+    IotConsumerModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

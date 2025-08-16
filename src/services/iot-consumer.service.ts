@@ -1,4 +1,7 @@
 import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { IotData } from '../schema/iot-data.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import * as amqp from 'amqplib';
 
 @Injectable()
@@ -9,6 +12,12 @@ export class IotConsumerService implements OnModuleInit, OnModuleDestroy {
   private readonly queue = 'xray_queue';
 
   private messages: any[] = [];
+
+  constructor(@InjectModel(IotData.name) private iotModel: Model<IotData>,) { }
+
+  async saveMessage(payload: any) {
+    return this.iotModel.create({ payload });
+  }
 
   async onModuleInit() {
     this.connection = await amqp.connect(process.env.RABBIT_URL || 'amqp://localhost');
@@ -23,11 +32,12 @@ export class IotConsumerService implements OnModuleInit, OnModuleDestroy {
         try {
           const json = JSON.parse(content);
           this.messages.push(json);
+          this.saveMessage(json)
           console.log('📥 Received:', json);
         } catch (err) {
           console.error('❌ Error parsing message:', err.message);
         }
-        this.channel.ack(msg); 
+        this.channel.ack(msg);
       }
     });
   }
@@ -40,8 +50,8 @@ export class IotConsumerService implements OnModuleInit, OnModuleDestroy {
     try {
       await this.channel.close();
       await this.connection.close();
-    } catch (e) { 
-        console.log(e);
+    } catch (e) {
+      console.log(e);
     }
   }
 }
