@@ -1,4 +1,8 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateSignalDto } from './create-signal.dto';
+import { ApiExtraModels } from '@nestjs/swagger';
 
-export class UpdateSignalDto extends PartialType(CreateSignalDto) {}
+@ApiExtraModels()
+export class UpdateSignalDto extends PartialType(CreateSignalDto) { }
+
+
