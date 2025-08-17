@@ -9,19 +9,19 @@ export class IotData {
     deviceId: string;
 
     @Prop({ required: true })
-    time: number; // timestamp اصلی
+    time: number;
 
     @Prop({ required: true })
-    dataLength: number; // تعداد آیتم‌ها در data
+    dataLength: number; 
 
     @Prop({ required: true })
-    dataVolume: number; // مجموع تعداد مقادیر یا حجم تقریبی
+    dataVolume: number; 
 
     @Prop({ type: Array, default: [] })
-    data: any[]; // آرایه اصلی data [time, [x, y, speed]]
+    data: any[];
 
     @Prop({ type: Object })
-    extra?: any; // برای هر پارامتر اضافی x-ray که بخوای ذخیره کنی
+    extra?: any;
 }
 
 export const IotDataSchema = SchemaFactory.createForClass(IotData);

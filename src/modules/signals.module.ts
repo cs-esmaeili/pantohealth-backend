@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { IotConsumerService } from '../services/iot-consumer.service';
+import { SignalsService } from '../services/signals.service';
+import { SignalsController } from '../controllers/signals.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { IotData, IotDataSchema } from '../schema/iot-data.schema';
 
@@ -7,6 +8,7 @@ import { IotData, IotDataSchema } from '../schema/iot-data.schema';
     imports: [
         MongooseModule.forFeature([{ name: IotData.name, schema: IotDataSchema }]),
     ],
-    providers: [IotConsumerService],
+    controllers: [SignalsController],
+    providers: [SignalsService],
 })
-export class IotConsumerModule { }
+export class SignalsModule { }
