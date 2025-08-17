@@ -13,7 +13,6 @@ async function bootstrap() {
   }));
 
   if (process.env.NODE_ENV !== 'production') {
-    
     const config = new DocumentBuilder()
       .setTitle('PANTOhealth IoT API')
       .setDescription('IoT X-ray signals with RabbitMQ & MongoDB')

@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { IotConsumerModule } from './modules/iot-consumer.module';
 import { SignalsModule } from './modules/signals.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -11,7 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
     IotConsumerModule,
     SignalsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule { }

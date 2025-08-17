@@ -36,18 +36,16 @@ export class IotConsumerService implements OnModuleInit, OnModuleDestroy {
     this.channel = await this.connection.createChannel();
     await this.channel.assertQueue(this.queue, { durable: true });
 
-    console.log('✅ Consumer connected, waiting for messages...');
 
     this.channel.consume(this.queue, (msg) => {
       if (msg !== null) {
         const content = msg.content.toString();
         try {
           const json = JSON.parse(content);
-          // this.saveMessage(json)
           this.traceAndSave(json)
-          console.log('📥 Received:', json);
+          console.log('Received:', json);
         } catch (err) {
-          console.error('❌ Error parsing message:', err.message);
+          console.error('Error parsing message:', err.message);
         }
         this.channel.ack(msg);
       }
