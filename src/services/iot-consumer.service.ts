@@ -42,8 +42,8 @@ export class IotConsumerService implements OnModuleInit, OnModuleDestroy {
         const content = msg.content.toString();
         try {
           const json = JSON.parse(content);
-          this.traceAndSave(json)
           console.log('Received:', json);
+          this.traceAndSave(json)
         } catch (err) {
           console.error('Error parsing message:', err.message);
         }
