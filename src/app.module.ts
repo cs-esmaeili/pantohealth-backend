@@ -5,7 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
-    MongooseModule.forRoot('mongodb://admin:admin@localhost:27017/iot_db?authSource=admin'),
+    MongooseModule.forRoot(process.env.MONGO_URL || 'mongodb://admin:admin@localhost:27017/iot_db?authSource=admin'),
     IotConsumerModule,
     SignalsModule,
   ],

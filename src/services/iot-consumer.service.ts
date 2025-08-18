@@ -31,11 +31,36 @@ export class IotConsumerService implements OnModuleInit, OnModuleDestroy {
     return this.iotModel.create(doc);
   }
 
-  async onModuleInit() {
-    this.connection = await amqp.connect(process.env.RABBIT_URL || 'amqp://localhost');
-    this.channel = await this.connection.createChannel();
-    await this.channel.assertQueue(this.queue, { durable: true });
+  async connectToRabbitMQ(): Promise<void> {
+    const url = process.env.RABBIT_URL || 'amqp://localhost:5672';
 
+    while (true) {
+      try {
+        this.connection = await amqp.connect(url);
+        this.channel = await this.connection.createChannel();
+        await this.channel.assertQueue(this.queue, { durable: true });
+        console.log(`Connected to RabbitMQ, queue: ${this.queue}`);
+
+        this.connection.on('error', (err) => {
+          console.error('RabbitMQ connection error:', err);
+        });
+        this.connection.on('close', () => {
+          console.warn('RabbitMQ connection closed, retrying in 5s...');
+          setTimeout(() => this.connectToRabbitMQ(), 5000);
+        });
+
+        break; 
+      } catch (err) {
+        console.warn('RabbitMQ not ready, retry in 5s...', err.message);
+        await new Promise(res => setTimeout(res, 5000));
+      }
+    }
+  }
+
+
+  async onModuleInit() {
+
+    await this.connectToRabbitMQ();
 
     this.channel.consume(this.queue, (msg) => {
       if (msg !== null) {
